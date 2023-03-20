@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <style>
+      .show {
+        display: block !important;
+      }
+      .hidden {
+        display: none !important;
+        visibility: hidden !important;
+      }
+      .highcharts-legend-item path.highcharts-graph {
+        display: none;
+      }
+    </style>
+    <title>Security</title>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white" style="background: black !important">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb- mb-lg-0 mt-2">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#" style="color: white">Dependabot PoC</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container-fluid mt-4 " style="margin-bottom: 100px" >
+    <div class="main-Component">
+      <div class="row" >
+        <div class="col-md-12">
+            <ul class="nav nav-tabs" id="tabComponent">
+            <li class="nav-item">
+              <a href="#" class="nav-link" :class="{ active: dependency }" v-on:click="setDependency(true)" >Vulnerability Management</a>
+          </li>
+            </ul>
+        </div>
+      </div>
+  
+      <div class="dependency-mgmt">
+        <div class="row mt-3" id="dependencyMgmtComponent">
+          <div class="col-sm-2" >
+            <div class="card bg-light  text-center"> 
+              <div class="card-body " >
+                <h6 class="card-title" style="font-weight: 400">TOTAL REPOS</h6>
+                <h1 class="card-text" style="font-weight: 100">{{totalRepo}}</h1>
+                
+              </div>
+            </div>
+          </div> 
+          <div class="col-sm-2" >
+            <div class="card bg-light  text-center" style="color: white !important; background-color: #ef40bd !important;"> 
+              <div class="card-body " >
+                <h6 class="card-title" style="font-weight: 400">TOTAL VULNERABILITIES</h6>
+                <h1 class="card-text" style="font-weight: 100">{{totalVuln}}</h1>
+                
+              </div>
+            </div>
+          </div>  
+          <div class="col-sm-2" >
+            <div class="card text-center bg-danger" style="color:white">
+              <div class="card-body">
+                <h6 class="card-title" style="font-weight: 300">CRITICAL</h6>
+                <h1 class="card-text" style="font-weight: 100">{{criticalVuln}}</h1>
+                
+              </div>
+            </div>
+          </div>  
+          <div class="col-sm-2" >
+            <div class="card text-center " style="background: #ff6616; color:white">
+              <div class="card-body">
+                <h6 class="card-title" style="font-weight: 300">HIGH</h6>
+                <h1 class="card-text" style="font-weight: 100">{{highVuln}}</h1>
+                
+              </div>
+            </div>
+          </div>  
+          <div class="col-sm-2" >
+            <div class="card text-center" style="background: #f6a600;; color:white">
+              <div class="card-body">
+                <h6 class="card-title" style="font-weight: 300">MEDIUM</h6>
+                <h1 class="card-text" style="font-weight: 100">{{medVuln}}</h1>
+                
+              </div>
+            </div>
+          </div>  
+          <div class="col-sm-2" >
+            <div class="card text-center " style="background: rgb(246 204 0); color:white">
+              <div class="card-body">
+                <h6 class="card-title" style="font-weight: 300">LOW</h6>
+                <h1 class="card-text" style="font-weight: 100">{{lowVuln}}</h1>
+                
+              </div>
+            </div>
+          </div>  
+        </div>
+        <div class="row mt-3">
+          <div class="col-sm-4">
+            <div class="card text-center bg-light">
+              <div class="card-body">
+                <h6 class="card-title text-start">Vulnerabilities By Severity</h6>
+                <div id="dependabot-severity" style="width:100%; height:275px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-8">
+            <div class="card text-center bg-light">
+              <div class="card-body">
+                <h6 class="card-title text-start">Vulnerabilities By CVSS Score</h6>
+                <div id="dependabot-cvss" style="width:100%; height:275px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-sm-4">
+            <div class="card text-center bg-light">
+              <div class="card-body">
+                <h6 class="card-title text-start">Vulnerabilities Per Repository</h6>
+                <div id="dependabot-repo" style="width:100%; height:420px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="card text-center bg-light">
+              <div class="card-body">
+                <h6 class="card-title text-start">Vulnerabilities Per Package</h6>
+                <div id="dependabot-packages" style="width:100%; height:420px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="card text-center bg-light">
+              <div class="card-body">
+                <h6 class="card-title text-start">Vulnerabilities Per Ecosystem</h6>
+                <div id="dependabot-ecosystem" style="width:100%; height:420px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-sm-12 mt-3"">
+            <div class="card text-center bg-light">
+              <div class="card-body">
+                <table class="table " id="dependabotFindings">
+                  <thead>
+                    <tr>
+                      <th>Severity</th>
+                      <th style="width: 200px">CVE</th>
+                      <th style="width: 200px">CVS Score</th>
+                      <th>Repository</th>
+                      <th>Package</th>
+                      <th>Description</th>
+                      <th>Created</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="row in rows">
+                      <td v-html="checkForSeverity(row.securityVulnerability.severity)"></td>
+                      <td>{{row.securityAdvisory.identifiers[1] ? row.securityAdvisory.identifiers[1].value : ""}}</td>
+                      <td>{{row.securityAdvisory.cvss.score}}</td>
+                      <td>{{row.Repository}}</td>
+                      <td>{{row.securityVulnerability.package.name}}</td>
+                      <td>{{row.securityVulnerability.advisory.description}}</td>
+                      <td>{{row.createdAt}}</td>
+                    </tr>
+                  </tbody>
+                  <!-- <thead>
+                    <tr>
+                      <th>Severity</th>
+                      <th style="width: 200px">CVE</th>
+                      <th style="width: 200px">CVS Score</th>
+                      <th style="width: 200px">Project</th>
+                      <th>Package</th>
+                      <th>Title</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="row in rows_snyk">
+                      <td v-html="checkForSeverity(row.severity)"></td>
+                      <td>{{row.cve}}</td>
+                      <td>{{row.cvssScore}}</td>
+                      <td>{{row.project}}</td>
+                      <td>{{row.packageName}}</td>
+                      <td>{{row.title}}</td>
+                      <td>{{row.description}}</td>
+                    </tr>
+                  </tbody> -->
+                </table>
+              </div>
+            </div>
+          </div>
+      </div>
+      </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/data.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.2.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.3/underscore-min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script src="./javascript/main.js"></script>
+
+  </body>
+</html>
