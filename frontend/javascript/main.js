@@ -104,21 +104,13 @@ Highcharts.setOptions({
 let tabComponent = new Vue({
   el: "#tabComponent",
   data: {
-    vuln: true,
-    threat: false,
-    container: false,
     dependency: false,
-    phishing: false,
   },
   methods: {
     setDependency(state) {
   
       $(".dependency-mgmt").removeClass("hidden");
       $(".dependency-mgmt").addClass("show");
-      Vue.set(tabComponent, "vuln", false);
-      Vue.set(tabComponent, "threat", false);
-      Vue.set(tabComponent, "container", false);
-      Vue.set(tabComponent, "phishing", false);
       Vue.set(tabComponent, "dependency", state);
     },
   },
