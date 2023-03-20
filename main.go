@@ -8,10 +8,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
-	"encoding/csv"
 	"strings"
-	"regexp"
-	"os/exec"
 	"github.com/PuerkitoBio/goquery"
 
 )

@@ -196,7 +196,8 @@ function getDependabot() {
       let dataSet = JSON.parse(this.response).Vulnerabilities.filter(
         (x, i) => x.state == "OPEN"
       );
-      console.log(dataSet[0]);
+
+      console.log(dataSet)
       let totalCount = dataSet.length;
       let criticalCount = 0;
       let highCount = 0;
