@@ -14,8 +14,10 @@ import (
 )
 
 var(
+	GLOBAL_DEPENDABOT_CVE_MAP = make(map[string]int)
 	GLOBAL_GH_API_URL = "https://api.github.com/graphql"
 	GLOBAL_EXPLOIT_DB_MAPPING_URL = "https://cve.mitre.org/data/refs/refmap/source-EXPLOIT-DB.html"
+	GLOBAL_CISA CISA
 )
 
 func main() {
@@ -33,12 +35,6 @@ func main() {
 
 }
 
-
-var (
-	GLOBAL_DEPENDABOT_CVE_MAP = make(map[string]int)
-)
-
-
 type CISAVuln struct {
 	CVEID string `json:"cveID"`
 }
@@ -46,7 +42,6 @@ type CISA struct {
 	Vulnerabilities []CISAVuln `json:"vulnerabilities"`
 }
 
-var GLOBAL_CISA CISA
 func runCVEDetection() {
 	jsonFile, err := os.Open("./cisa.json")
 	// if we os.Open returns an error then handle it
