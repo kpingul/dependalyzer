@@ -13,6 +13,11 @@ import (
 
 )
 
+var(
+	GLOBAL_GH_API_URL = "https://api.github.com/graphql"
+	GLOBAL_EXPLOIT_DB_MAPPING_URL = "https://cve.mitre.org/data/refs/refmap/source-EXPLOIT-DB.html"
+)
+
 func main() {
 	
 	// setExploitDBMapping()
@@ -111,14 +116,13 @@ var githubrepos GithubRepo
 
 func initialGenerateGithubGraphQLRepoCall() (bool, string) {
 	fmt.Println("initialGenerateGithubGraphQLRepoCall...")
-	url := "https://api.github.com/graphql"
   	method := "POST"
 
   	payload := strings.NewReader("{\"query\":\"query { \\r\\n  organization(login: \\\"$org\\\") {\\r\\n    repositories(first: 100) {\\r\\n      totalCount\\r\\n      nodes {\\r\\n        name\\r\\n      }\\r\\n      pageInfo {\\r\\n        hasNextPage\\r\\n        endCursor\\r\\n      }\\r\\n    }\\r\\n  }\\r\\n\\r\\n}\",\"variables\":{}}")
 
   	client := &http.Client {}
 
-  	req, err := http.NewRequest(method, url, payload)
+  	req, err := http.NewRequest(method, GLOBAL_GH_API_URL, payload)
   	if err != nil {
     	fmt.Println(err)
   	}
@@ -158,12 +162,11 @@ func generateGithubGraphQLRepoCall(hasNextPage bool, endCursor string) {
 		time.Sleep(2 * time.Second)
 		fmt.Println("Making REPO API call")
 
-		url := "https://api.github.com/graphql"
 	  	method := "POST"
 		payload := strings.NewReader("{\"query\":\"query { \\r\\n  organization(login: \\\"$org\\\") {\\r\\n    repositories(first: 100, after:\\\"" + endCursor + "\\\") {\\r\\n      totalCount\\r\\n      nodes {\\r\\n        name\\r\\n      }\\r\\n      pageInfo {\\r\\n        hasNextPage\\r\\n        endCursor\\r\\n      }\\r\\n    }\\r\\n  }\\r\\n\\r\\n}\",\"variables\":{}}")
 
 		client := &http.Client {}
-		req, err := http.NewRequest(method, url, payload)
+		req, err := http.NewRequest(method, GLOBAL_GH_API_URL, payload)
 
 		if err != nil {
 			fmt.Println(err)
@@ -344,13 +347,13 @@ var githubdependabotalerts GithubDependabot
 func initialGenerateGithubGraphQLDependabotCall(repo string)  (bool, string){
 	fmt.Println("initialGenerateGithubGraphQLDependabotCall..")
 	fmt.Println(repo)
-	url := "https://api.github.com/graphql"
+	
   	method := "POST"
 
   	payload := strings.NewReader("{\"query\":\"query { \\r\\n    repository(name: \\\"" + repo + "\\\", owner: \\\"$org\\\") {\\r\\n        vulnerabilityAlerts(first: 100) {\\r\\n            nodes {\\r\\n                state \\r\\n                createdAt \\r\\n  vulnerableManifestFilename \\r\\n                vulnerableManifestPath \\r\\n                vulnerableRequirements \\r\\n                securityAdvisory{\\r\\n                    identifiers {\\r\\n                        type \\r\\n                        value\\r\\n                    }\\r\\n classification \\r\\n  cvss {\\r\\n score\\r\\n vectorString \\r\\n } publishedAt \\r\\n             }\\r\\n                securityVulnerability {\\r\\n                    package {\\r\\n                        name\\r\\n                        ecosystem\\r\\n                    }\\r\\n                    severity \\r\\n              \\r\\n                    advisory {\\r\\n                        description\\r\\n                    }\\r\\n                }\\r\\n            }\\r\\n            pageInfo {\\r\\n                hasNextPage \\r\\n                endCursor\\r\\n            }\\r\\n        }\\r\\n    }\\r\\n}\",\"variables\":{}}")
 
   	client := &http.Client {}
-  	req, err := http.NewRequest(method, url, payload)
+  	req, err := http.NewRequest(method, GLOBAL_GH_API_URL, payload)
 
   	if err != nil {
     	fmt.Println(err)
@@ -391,13 +394,12 @@ func generateGithubGraphQLDependabotCall(repo string, hasNextPage bool, endCurso
 		time.Sleep(2 * time.Second)
 		fmt.Println("Making DEPENDABOT API call")
 
-		url := "https://api.github.com/graphql"
 	  	method := "POST"
 
 	  	payload := strings.NewReader("{\"query\":\"query { \\r\\n    repository(name: \\\"" + repo + "\\\", owner: \\\"$org\\\") {\\r\\n        vulnerabilityAlerts(first: 100, after:\\\"" + endCursor + "\\\") {\\r\\n            nodes {\\r\\n                state \\r\\n           createdAt \\r\\n     vulnerableManifestFilename \\r\\n                vulnerableManifestPath \\r\\n                vulnerableRequirements \\r\\n                securityAdvisory{\\r\\n                    identifiers {\\r\\n                        type \\r\\n                        value\\r\\n                   }\\r\\n      classification \\r\\n  cvss {\\r\\n score\\r\\n vectorString \\r\\n } publishedAt \\r\\n           }\\r\\n                securityVulnerability {\\r\\n                    package {\\r\\n                        name\\r\\n                        ecosystem\\r\\n                    }\\r\\n                    severity \\r\\n              \\r\\n                    advisory {\\r\\n                        description\\r\\n                    }\\r\\n                }\\r\\n            }\\r\\n            pageInfo {\\r\\n                hasNextPage \\r\\n                endCursor\\r\\n            }\\r\\n        }\\r\\n    }\\r\\n}\",\"variables\":{}}")
 
 	  	client := &http.Client {}
-	  	req, err := http.NewRequest(method, url, payload)
+	  	req, err := http.NewRequest(method, GLOBAL_GH_API_URL, payload)
 
 	  	if err != nil {
 	    	fmt.Println(err)
@@ -440,8 +442,7 @@ var GLOBAL_EXPLOITDB []string
 
 func setExploitDBMapping() {
 	fmt.Println("setExploitDBMapping..")
-    webPage := "https://cve.mitre.org/data/refs/refmap/source-EXPLOIT-DB.html"
-    resp, err := http.Get(webPage)
+    resp, err := http.Get(GLOBAL_EXPLOIT_DB_MAPPING_URL)
 
     if err != nil {
         log.Fatal(err)
