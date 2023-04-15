@@ -2,6 +2,9 @@ getDependabot();
 
 //TOP LEVEL
 let GLOBAL_VAR = {
+  API: {
+    dependabot: "http://127.0.0.1:8090/api/v1/github/dependabot/all"
+  },
   Jan: "Jan",
   Feb: "Feb",
   Mar: "Mar",
@@ -315,7 +318,7 @@ function getDependabot() {
       // );
     }
   };
-  xhttp.open("GET", "http://127.0.0.1:8090/api/v1/github/dependabot/all", true);
+  xhttp.open("GET", GLOBAL_VAR.API.dependabot, true);
   xhttp.send();
 }
 function setVulnDependabotChart(titleOfChart, data) {
