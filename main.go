@@ -17,6 +17,7 @@ var(
 	GLOBAL_DEPENDABOT_CVE_MAP = make(map[string]int)
 	GLOBAL_GH_API_URL = "https://api.github.com/graphql"
 	GLOBAL_EXPLOIT_DB_MAPPING_URL = "https://cve.mitre.org/data/refs/refmap/source-EXPLOIT-DB.html"
+	GLOBAL_CISA_JSON_FEED = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
 	GLOBAL_CISA CISA
 )
 
