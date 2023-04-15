@@ -17,14 +17,13 @@ var(
 	GLOBAL_DEPENDABOT_CVE_MAP = make(map[string]int)
 	GLOBAL_GH_API_URL = "https://api.github.com/graphql"
 	GLOBAL_EXPLOIT_DB_MAPPING_URL = "https://cve.mitre.org/data/refs/refmap/source-EXPLOIT-DB.html"
-	GLOBAL_CISA_JSON_FEED = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
-	GLOBAL_CISA CISA
+	GLOBAL_CISA_JSON_FEED_URL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
 )
 
 func main() {
 	
 	// setExploitDBMapping()
-	// runDependabotScan()
+	// runDependabotScan(_
 	createDependabotCVEMap()
 	runCVEDetection()
 
@@ -43,28 +42,21 @@ type CISA struct {
 	Vulnerabilities []CISAVuln `json:"vulnerabilities"`
 }
 
+
 func runCVEDetection() {
-	jsonFile, err := os.Open("./cisa.json")
-	// if we os.Open returns an error then handle it
+	fmt.Println("runCVEDetection..")
+
+	vulnerabilityFeed, err := fetchCISAVulnerabilityFeed(GLOBAL_CISA_JSON_FEED_URL)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalf("Error fetching CISA vulnerability feed: %v", err)
 	}
 
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer jsonFile.Close()
 
-	// read our opened xmlFile as a byte array.
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	// we unmarshal our byteArray which contains our
-	// jsonFile's content into 'users' which we defined above
-	json.Unmarshal(byteValue, &GLOBAL_CISA)
-
-	for i := 0; i < len(GLOBAL_CISA.Vulnerabilities); i++ {
+	for i := 0; i < len(vulnerabilityFeed.Vulnerabilities); i++ {
 		
-		_, okCheck := GLOBAL_DEPENDABOT_CVE_MAP[GLOBAL_CISA.Vulnerabilities[i].CVEID]
+		_, okCheck := GLOBAL_DEPENDABOT_CVE_MAP[vulnerabilityFeed.Vulnerabilities[i].CVEID]
 		if okCheck {
-			fmt.Println("CISA - DEPENDABOT - " + GLOBAL_CISA.Vulnerabilities[i].CVEID + " EXIST !")				
+			fmt.Println("CISA - DEPENDABOT - " + vulnerabilityFeed.Vulnerabilities[i].CVEID + " EXIST !")				
 		}
 		
 	}
@@ -475,4 +467,30 @@ func setExploitDBMapping() {
 	})
 
 	
+}
+
+
+func fetchCISAVulnerabilityFeed(url string) (*CISA, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch vulnerability feed: %v", resp.Status)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var vulnerabilityFeed CISA
+	err = json.Unmarshal(body, &vulnerabilityFeed)
+	if err != nil {
+		return nil, err
+	}
+
+	return &vulnerabilityFeed, nil
 }
