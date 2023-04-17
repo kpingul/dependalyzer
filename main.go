@@ -23,7 +23,7 @@ var(
 func main() {
 	
 	// setExploitDBMapping()
-	// runDependabotScan(_
+	// runDependabotScan()
 	createDependabotCVEMap()
 	runCVEDetection()
 
