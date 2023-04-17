@@ -191,7 +191,6 @@ func generateGithubGraphQLRepoCall(hasNextPage bool, endCursor string) {
 
 }
 
-// if len(githubrepos.Repos) > 0 {
 func runDependabotScan() {
 	repoHasNextPage, repoEndCursor := initialGenerateGithubGraphQLRepoCall()
 	generateGithubGraphQLRepoCall(repoHasNextPage, repoEndCursor)
