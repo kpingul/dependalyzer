@@ -18,9 +18,12 @@ var(
 	GLOBAL_GH_API_URL = "https://api.github.com/graphql"
 	GLOBAL_EXPLOIT_DB_MAPPING_URL = "https://cve.mitre.org/data/refs/refmap/source-EXPLOIT-DB.html"
 	GLOBAL_CISA_JSON_FEED_URL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
+	GLOBAL_GH_API_TOKEN = ""
 )
 
 func main() {
+
+	setGHToken()
 	
 	// setExploitDBMapping()
 	// runDependabotScan()
@@ -33,6 +36,14 @@ func main() {
 	http.Handle("/", fs)
 	http.ListenAndServe(":8090", nil)
 
+}
+
+func setGHToken(){
+	token := os.Getenv("GH_TOKEN")
+
+	if token != "" {
+		GLOBAL_GH_API_TOKEN = token
+	} 
 }
 
 type CISAVuln struct {
@@ -116,7 +127,7 @@ func initialGenerateGithubGraphQLRepoCall() (bool, string) {
   	}
   
   	req.Header.Add("Accept", "application/vnd.github.hawkgirl-preview+json")
-  	req.Header.Add("Authorization", "Bearer $Token")
+  	req.Header.Add("Authorization", "Bearer " + GLOBAL_GH_API_TOKEN)
   	req.Header.Add("Content-Type", "application/json")
 
   	res, err := client.Do(req)
@@ -160,7 +171,7 @@ func generateGithubGraphQLRepoCall(hasNextPage bool, endCursor string) {
 			fmt.Println(err)
 		}
 		req.Header.Add("Accept", "application/vnd.github.hawkgirl-preview+json")
-		req.Header.Add("Authorization", "Bearer $Token")
+		req.Header.Add("Authorization", "Bearer " + GLOBAL_GH_API_TOKEN)
 		req.Header.Add("Content-Type", "application/json")
 
 		res, err := client.Do(req)
@@ -346,7 +357,7 @@ func initialGenerateGithubGraphQLDependabotCall(repo string)  (bool, string){
     	fmt.Println(err)
   	}
   	req.Header.Add("Accept", "application/vnd.github.hawkgirl-preview+json")
-  	req.Header.Add("Authorization", "Bearer $Token")
+  	req.Header.Add("Authorization", "Bearer " + GLOBAL_GH_API_TOKEN)
   	req.Header.Add("Content-Type", "application/json")
 
   	res, err := client.Do(req)
@@ -392,7 +403,7 @@ func generateGithubGraphQLDependabotCall(repo string, hasNextPage bool, endCurso
 	    	fmt.Println(err)
 	  	}
 	  	req.Header.Add("Accept", "application/vnd.github.hawkgirl-preview+json")
-	  	req.Header.Add("Authorization", "Bearer $Token")
+	  	req.Header.Add("Authorization", "Bearer " + GLOBAL_GH_API_TOKEN)
 	  	req.Header.Add("Content-Type", "application/json")
 
 	  	res, err := client.Do(req)
